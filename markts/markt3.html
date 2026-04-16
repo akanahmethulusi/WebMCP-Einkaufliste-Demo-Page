@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markt 3</title>
+    <script src="https://unpkg.com/@mcp-b/global@latest/dist/index.iife.js"></script>
+    <script src="../declarative-polyfill.js"></script>
+    <style>
+        body {
+            font-family: 'Helvetica', sans-serif;
+            background-color: #5d3ebc;
+            margin: 0;
+            padding: 10px;
+            color: white;
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .app-header h2 {
+            color: #ffd300;
+            margin: 0;
+        }
+
+        .product-card {
+            background: white;
+            color: #5d3ebc;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price {
+            color: #5d3ebc;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            box-sizing: border-box;
+            color: #5d3ebc;
+        }
+
+        button {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-header">
+        <h2>markt3</h2>
+        <p style="font-size: 0.8em; color: #ffd300;">In wenigen Minuten bei Ihnen zu Hause</p>
+    </div>
+
+    <form toolname="markt3_search" tooldescription="Search for products in Markt 3 for fast delivery."
+        toolautosubmit="true">
+        <input type="text" name="query" placeholder="Markt 3 ist Glück..."
+            toolparamdescription="Product to search for." autocomplete="off">
+        <button type="submit">Suche</button>
+    </form>
+
+    <div id="results" style="margin-top: 20px;"></div>
+    <div id="debug" style="margin-top: 20px; font-size: 0.8em; color: #ffd300; display: none;"></div>
+
+    <script>
+        // Mock Database for Markt 3 (Fast delivery, slightly higher prices)
+        const mockDatabase = [
+            { name: "Standardeier (10er-Packung)", price: "2.50 €", stock: 100 },
+            { name: "Pasteurisierte Milch (1L)", price: "1.50 €", stock: 80 },
+            { name: "Toastbrot", price: "2.20 €", stock: 60 },
+            { name: "Bananen", price: "1.00 €", stock: 40 },
+            { name: "Riviera Olivenöl (1L)", price: "19.00 €", stock: 15 }
+        ];
+
+        document.querySelector('form').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const resultsContainer = document.getElementById('results');
+            const debugContainer = document.getElementById('debug');
+
+            const searchOperation = async () => {
+                const query = new FormData(event.target).get('query').toString().toLowerCase();
+
+                resultsContainer.innerHTML = '<p style="text-align:center; color: #ffd300;">Ihre Bestellung wird vorbereitet....</p>';
+                await new Promise(r => setTimeout(r, 200)); // Very fast!
+
+                const matches = mockDatabase.filter(p => p.name.toLowerCase().includes(query));
+
+                if (matches.length > 0) {
+                    resultsContainer.innerHTML = matches.map(p => `
+                        <div class="product-card">
+                            <span>${p.name}</span>
+                            <span class="price">${p.price}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    resultsContainer.innerHTML = '<p style="text-align:center; color: #ffd300;">Produkt nicht gefunden..</p>';
+                }
+
+                if (event.agentInvoked) {
+                    debugContainer.style.display = 'block';
+                    debugContainer.innerText = "Agent invoked Markt 3 search.";
+                }
+
+                return {
+                    store: "Markt 3",
+                    status: "success",
+                    query: query,
+                    results: matches
+                };
+            };
+
+            const resultPromise = searchOperation();
+
+            if (event.agentInvoked) {
+                event.respondWith(resultPromise);
+            }
+        });
+    </script>
+</body>
+
+</html>

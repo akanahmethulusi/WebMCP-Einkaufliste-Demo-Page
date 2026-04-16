@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebMCP Demolar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" href="data:,">
+    <style>
+        :root {
+            --ink: #111;
+            --paper: #f4f1eb;
+            --paper-warm: #ebe7df;
+            --rule: #d4cfc6;
+            --muted: #8a847a;
+            --accent: #c44b28;
+            --accent-glow: rgba(196, 75, 40, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--paper);
+            color: var(--ink);
+            font-family: 'Geist Mono', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ---- Grain overlay ---- */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* ---- Layout ---- */
+        .page {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 6rem 2rem 4rem;
+        }
+
+        /* ---- Header ---- */
+        .masthead {
+            margin-bottom: 4rem;
+        }
+
+        .masthead h1 {
+            font-family: 'Instrument Serif', serif;
+            font-size: clamp(3rem, 8vw, 5.5rem);
+            font-weight: 400;
+            line-height: 0.95;
+            letter-spacing: -0.03em;
+            color: var(--ink);
+        }
+
+        .masthead h1 em {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .masthead .tagline {
+            margin-top: 1.25rem;
+            font-size: 0.8rem;
+            color: var(--muted);
+            letter-spacing: 0.04em;
+            line-height: 1.6;
+            max-width: 480px;
+        }
+
+        .rule {
+            width: 100%;
+            height: 1px;
+            background: var(--rule);
+            margin: 2rem 0;
+        }
+
+        .rule.thick {
+            height: 2px;
+            background: var(--ink);
+        }
+
+        /* ---- Demo Cards ---- */
+        .demos {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .demo-card {
+            display: grid;
+            grid-template-columns: 56px 1fr auto;
+            align-items: start;
+            gap: 1.5rem;
+            padding: 1.75rem 0;
+            border-bottom: 1px solid var(--rule);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .demo-card:first-child {
+            border-top: 1px solid var(--rule);
+        }
+
+        .demo-card::after {
+            content: '';
+            position: absolute;
+            inset: 0 -2rem;
+            background: var(--accent-glow);
+            border-radius: 4px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: -1;
+        }
+
+        .demo-card:hover::after {
+            opacity: 1;
+        }
+
+        .demo-card:hover .card-arrow {
+            transform: translateX(4px);
+            color: var(--accent);
+        }
+
+        .demo-card:hover .card-number {
+            color: var(--accent);
+        }
+
+        .card-number {
+            font-family: 'Instrument Serif', serif;
+            font-size: 2rem;
+            line-height: 1;
+            color: var(--rule);
+            transition: color 0.3s;
+            padding-top: 0.15rem;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .card-title {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+            line-height: 1.15;
+            letter-spacing: -0.01em;
+        }
+
+        .card-desc {
+            font-size: 0.75rem;
+            color: var(--muted);
+            line-height: 1.55;
+            max-width: 420px;
+        }
+
+        .card-tags {
+            display: flex;
+            gap: 0.4rem;
+            margin-top: 0.35rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.2rem 0.5rem;
+            border: 1px solid var(--rule);
+            border-radius: 2px;
+            color: var(--muted);
+        }
+
+        .tag.highlight {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .card-arrow {
+            font-size: 1.2rem;
+            color: var(--rule);
+            padding-top: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        /* ---- Footer ---- */
+        .footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.65rem;
+            color: var(--muted);
+            letter-spacing: 0.05em;
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ---- Staggered entrance ---- */
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .masthead h1   { animation: rise 0.6s ease both; }
+        .masthead .tagline { animation: rise 0.6s ease 0.1s both; }
+        .demo-card:nth-child(1) { animation: rise 0.5s ease 0.15s both; }
+        .demo-card:nth-child(2) { animation: rise 0.5s ease 0.22s both; }
+        .demo-card:nth-child(3) { animation: rise 0.5s ease 0.29s both; }
+        .demo-card:nth-child(4) { animation: rise 0.5s ease 0.36s both; }
+        .footer { animation: rise 0.4s ease 0.5s both; }
+
+        /* ---- Mobile ---- */
+        @media (max-width: 600px) {
+            .page { padding: 3rem 1.25rem 2rem; }
+            .demo-card { grid-template-columns: 36px 1fr auto; gap: 1rem; }
+            .card-number { font-size: 1.5rem; }
+            .card-title { font-size: 1.2rem; }
+            .card-arrow { display: none; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <header class="masthead">
+            <h1>Web<em> MCP</em><br></h1>
+            <p class="tagline">Interaktive Webanwendungen, die von KI-Agenten über das Model Context Protocol (WebMCP) genutzt werden können. Jede Demo läuft unabhängig – die programmatische Steuerung wird über WebMCP hinaus erweitert.</p>
+        </header>
+
+        <div class="rule thick"></div>
+
+        <nav class="demos">
+            
+
+            <a href="einkauf.html" class="demo-card">
+                <span class="card-number">01</span>
+                <div class="card-body">
+                    <div class="card-title">Einkaufsliste</div>
+                    <div class="card-desc">Eine Einkaufslisten-App für mehrere Märkte mit Super-App-Architektur. Unteranwendungen laufen in iFrames und registrieren ihre Tools bei der Hauptanwendung mittels postMessage.</div>
+                    <div class="card-tags">
+                        <span class="tag">iframe</span>
+                        <span class="tag">postMessage</span>
+                        <span class="tag highlight">5 Fahrzeuge</span>
+                    </div>
+                </div>
+                <span class="card-arrow">&rarr;</span>
+            </a>
+
+        </nav>
+
+        <div class="rule"></div>
+
+        <footer class="footer">
+            <span>WebMCP-Demo </span>
+            <a href="https://anthropic.com" target="_blank">github.com/anthropics/web-mcp</a>
+        </footer>
+    </div>
+</body>
+
+</html>
